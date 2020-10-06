@@ -59,14 +59,16 @@
         wget https://releases.mattermost.com/5.27.0/mattermost-5.27.0-linux-amd64.tar.gz
         tar -xvzf mattermost*.gz     
     - name: Some file operations and configuration settings
-      become: yes
+      become_user: root
       shell: |
-        sudo mv mattermost /opt
-        sudo mkdir /opt/mattermost/data
-        sudo useradd --system --user-group mattermost
-        sudo chown -R mattermost:mattermost /opt/mattermost
-        sudo chmod -R g+w /opt/mattermost
-        sudo mv /vagrant/config.json /opt/mattermost/config/config.json
+        mv mattermost /opt
+        mkdir /opt/mattermost/data
+        useradd --system --user-group mattermost
+        chown -R mattermost:mattermost /opt/mattermost
+        chmod -R g+w /opt/mattermost
+        cp /vagrant/config.json /opt/mattermost/config/config.json
+        chown -R mattermost:mattermost /opt/mattermost/config/config.json
+
 
 
 
