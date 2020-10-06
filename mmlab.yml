@@ -1,0 +1,77 @@
+---
+- name: Pre-requistes
+  hosts: all
+  become_user: root
+  become: yes
+  
+  tasks:
+  - name: Update apt
+    apt:
+      update_cache: yes
+  #- name: Upgrade
+  #  apt:
+  #    upgrade: dist
+  - name: Install Postgres
+    apt:
+        name: "{{ packages }}"
+    vars:
+      packages:
+        - postgresql
+        - postgresql-contrib
+        - python-psycopg2
+        - python-pip
+    become: yes
+  - name: Pip install python dependency
+    pip: 
+      name: psycopg2
+- name: MatterMost database maintenance as postgres
+  hosts: all
+  become: yes
+  become_user: postgres
+  
+  tasks: 
+  - name: Create MatterMost database
+    postgresql_db:
+      name: MatterMost
+  - name: Create MatterMost user for database
+    postgresql_user:
+      db: MatterMost
+      name: mmuser
+      password: thisspaceforrent
+      priv: ALL
+  
+- name: Resume provisoining as root
+  hosts: all
+  become: yes
+  become_user: root  
+  tasks:
+    - name: Setup pg_hba.conf
+      postgresql_pg_hba:
+        dest: /etc/postgresql/10/main/pg_hba.conf
+        contype: local
+        method: trust
+    - name: Reload Postgresql
+      service:
+        name: postgresql
+        state: reloaded
+    - name: Get MM package and extract
+      shell: |
+        wget https://releases.mattermost.com/5.27.0/mattermost-5.27.0-linux-amd64.tar.gz
+        tar -xvzf mattermost*.gz     
+    - name: Some file operations and configuration settings
+      become: yes
+      shell: |
+        sudo mv mattermost /opt
+        sudo mkdir /opt/mattermost/data
+        sudo useradd --system --user-group mattermost
+        sudo chown -R mattermost:mattermost /opt/mattermost
+        sudo chmod -R g+w /opt/mattermost
+        sudo mv /vagrant/config.json /opt/mattermost/config/config.json
+
+
+
+
+
+
+
+
