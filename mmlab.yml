@@ -20,6 +20,8 @@
         - postgresql-contrib
         - python-psycopg2
         - python-pip
+        - docker.io
+        - ldapscripts
     become: yes
   - name: Pip install python dependency
     pip: 
@@ -68,6 +70,13 @@
         chmod -R g+w /opt/mattermost
         cp /vagrant/config.json /opt/mattermost/config/config.json
         chown -R mattermost:mattermost /opt/mattermost/config/config.json
+    - name: Make MatterMost a service and start it 
+      become_user: root
+      shell: |
+        cp /vagrant/mattermost.service /lib/systemd/system/mattermost.service
+        systemctl daemon-reload
+        systemctl start mattermost.service
+        systemctl enable mattermost.service
 
 
 
