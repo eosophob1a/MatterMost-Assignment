@@ -77,7 +77,11 @@
         systemctl daemon-reload
         systemctl start mattermost.service
         systemctl enable mattermost.service
-
+    - name: Setup docker container for LDAP
+      become_user: root
+      shell: | 
+        docker pull rroemhild/test-openldap
+        docker run --privileged -d -p 389:389 rroemhild/test-openldap
 
 
 
