@@ -1,9 +1,8 @@
 ---
-- name: Pre-requistes
+- name: TCJ MatterMost Assignement Install
   hosts: all
   become_user: root
   become: yes
-  
   tasks:
   - name: Update apt
     apt:
@@ -11,7 +10,7 @@
   - name: Upgrade
     apt:
       upgrade: dist
-  - name: Install pre-requisuite packages
+  - name: Install prerequisite packages
     apt:
         name: "{{ packages }}"
     vars:
@@ -25,10 +24,10 @@
         - nginx
         - git
     become: yes
-  - name: Pip install python dependency
+  - name: PIP install python dependency
     pip: 
       name: psycopg2
-- name: MatterMost database maintenance as postgres
+- name: Switch user context and perform MatterMost database configuration
   hosts: all
   become: yes
   become_user: postgres
@@ -42,7 +41,7 @@
       name: mmuser
       password: thisspaceforrent
       priv: ALL  
-- name: Resume provisoining as root
+- name: Switch user context and continue configuration
   hosts: all
   become: yes
   become_user: root  
@@ -56,7 +55,7 @@
       service:
         name: postgresql
         state: reloaded
-    - name: Get MM package and extract
+    - name: Get MatterMost package and extract
       shell: |
         wget https://releases.mattermost.com/5.27.0/mattermost-5.27.0-linux-amd64.tar.gz
         tar -xvzf mattermost*.gz     
@@ -68,16 +67,16 @@
         useradd --system --user-group mattermost
         chown -R mattermost:mattermost /opt/mattermost
         chmod -R g+w /opt/mattermost
-        cp /vagrant/config.json /opt/mattermost/config/config.json
+        cp /vagrant/files/config.json /opt/mattermost/config/config.json
         chown -R mattermost:mattermost /opt/mattermost/config/config.json
-        cp /vagrant/license /opt/mattermost/license
+        cp /vagrant/files/license /opt/mattermost/license
         chown -R mattermost:mattermost /opt/mattermost/license
-        cp /vagrant/localhost.crt /etc/ssl/certs/localhost.crt
-        cp /vagrant/localhost.key /etc/ssl/private/localhost.key
+        cp /vagrant/files/localhost.crt /etc/ssl/certs/localhost.crt
+        cp /vagrant/files/localhost.key /etc/ssl/private/localhost.key
     - name: Make MatterMost a service and start it 
       become_user: root
       shell: |
-        cp /vagrant/mattermost.service /lib/systemd/system/mattermost.service
+        cp /vagrant/files/mattermost.service /lib/systemd/system/mattermost.service
         systemctl daemon-reload
         systemctl start mattermost.service
         systemctl enable mattermost.service
@@ -99,7 +98,7 @@
     - name: Setting up nginx reverse proxy
       become_user: root
       shell: | 
-        cp /vagrant/mattermost /etc/nginx/sites-available/mattermost
+        cp /vagrant/files/mattermost /etc/nginx/sites-available/mattermost
         ln -s /etc/nginx/sites-available/mattermost /etc/nginx/sites-enabled/mattermost
     - name: Restarting nginx
       become_user: root  
