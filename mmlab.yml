@@ -22,6 +22,7 @@
         - python-pip
         - docker.io
         - ldapscripts
+        - nginx
     become: yes
   - name: Pip install python dependency
     pip: 
@@ -70,6 +71,8 @@
         chmod -R g+w /opt/mattermost
         cp /vagrant/config.json /opt/mattermost/config/config.json
         chown -R mattermost:mattermost /opt/mattermost/config/config.json
+        cp /vagrant/license /opt/mattermost/license
+        chown -R mattermost:mattermost /opt/mattermost/license
     - name: Make MatterMost a service and start it 
       become_user: root
       shell: |
@@ -82,11 +85,14 @@
       shell: | 
         docker pull rroemhild/test-openldap
         docker run --privileged -d -p 389:389 rroemhild/test-openldap
-
-
-
-
-
-
-
-
+    - name: Setup users for for Planet Express
+      become_user: root
+      shell: | 
+        cd /opt/mattermost
+        bin/mattermost user create --email admin@planetexpress.com --username admin --password AdminAdmin1! --system_admin
+        bin/mattermost team create --name planet-express --display_name "Planet Express" --email "admin@planetexpress.com"
+        bin/mattermost team create --name olympus --display_name "Administrative Staff" --email "admin@planetexpress.com"
+        bin/mattermost team create --name ship-crew --display_name "Ship's Crew" --email "admin@planetexpress.com"
+        bin/mattermost team add planet-express admin@planetexpress.com
+        bin/mattermost team add olympus admin@planetexpress.com
+    
