@@ -8,10 +8,10 @@
   - name: Update apt
     apt:
       update_cache: yes
-  #- name: Upgrade
-  #  apt:
-  #    upgrade: dist
-  - name: Install Postgres
+  - name: Upgrade
+    apt:
+      upgrade: dist
+  - name: Install pre-requisuite packages
     apt:
         name: "{{ packages }}"
     vars:
@@ -23,6 +23,7 @@
         - docker.io
         - ldapscripts
         - nginx
+        - git
     become: yes
   - name: Pip install python dependency
     pip: 
@@ -31,7 +32,6 @@
   hosts: all
   become: yes
   become_user: postgres
-  
   tasks: 
   - name: Create MatterMost database
     postgresql_db:
@@ -41,8 +41,7 @@
       db: MatterMost
       name: mmuser
       password: thisspaceforrent
-      priv: ALL
-  
+      priv: ALL  
 - name: Resume provisoining as root
   hosts: all
   become: yes
@@ -61,7 +60,7 @@
       shell: |
         wget https://releases.mattermost.com/5.27.0/mattermost-5.27.0-linux-amd64.tar.gz
         tar -xvzf mattermost*.gz     
-    - name: Some file operations and configuration settings
+    - name: Staging all required configurations and certificates
       become_user: root
       shell: |
         mv mattermost /opt
@@ -73,6 +72,8 @@
         chown -R mattermost:mattermost /opt/mattermost/config/config.json
         cp /vagrant/license /opt/mattermost/license
         chown -R mattermost:mattermost /opt/mattermost/license
+        cp /vagrant/localhost.crt /etc/ssl/certs/localhost.crt
+        cp /vagrant/localhost.key /etc/ssl/private/localhost.key
     - name: Make MatterMost a service and start it 
       become_user: root
       shell: |
@@ -95,4 +96,15 @@
         bin/mattermost team create --name ship-crew --display_name "Ship's Crew" --email "admin@planetexpress.com"
         bin/mattermost team add planet-express admin@planetexpress.com
         bin/mattermost team add olympus admin@planetexpress.com
+    - name: Setting up nginx reverse proxy
+      become_user: root
+      shell: | 
+        cp /vagrant/mattermost /etc/nginx/sites-available/mattermost
+        ln -s /etc/nginx/sites-available/mattermost /etc/nginx/sites-enabled/mattermost
+    - name: Restarting nginx
+      become_user: root  
+      shell: 
+        systemctl restart nginx
+
+
     
