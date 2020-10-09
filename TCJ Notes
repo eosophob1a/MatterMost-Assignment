@@ -1,3 +1,5 @@
+Notes:
+
 Required software to run vagrantfile
 
 Vagrant
@@ -11,14 +13,28 @@ Mac OS X 10.15.6
 Fedora 32
 
 Started process initializing provisioning guest using MM documentation site as a reference
-Fiddled with python2 dependencies to get ansible provisioner to work with 18.04; there were some dependencies that were required to utilize the postgres modules
+Reference https://docs.mattermost.com/install/install-ubuntu-1804.html
+
+To get ansible to function correctly in Ubuntu 18.04 I needed to make sure that my VM had the appropriate depenedencies to utilze modules for postgres.  Manually performed steps and did testing to determine the proper process to automate.  
+
 During setup of the database I ran in to issues setting up database and database users.  I resolved this by separating the step out and changing user to the postgres user to test permissions to DB
-Got hung with config.json and best way to template using vagrant decided to pre-create required files for configuration and use vagrant's shared file structure to stage all required files
-Ran in to an issue with setting up OpenLDAP unattended due to prompts like setting root password for the directory ; Asked Sven about using docker image of OpenLDAP that was used by icelander (Paul)
-in their LDAP test.  Sven was ok with this so implemented this as a solution for LDAP.  Updated the config.json to connect MatterMost instance to this LDAP.
+
+Ran into an issue with config.json and best way to template using vagrant decided to pre-create required files for configuration and use vagrant's shared file structure to stage all required files
+
+Ran in to an issue with setting up OpenLDAP unattended due to prompts like setting root password for the directory ; Asked Sven about using docker image of OpenLDAP Sven was ok with this so implemented this as a solution for LDAP.
+Reference: https://github.com/rroemhild/docker-test-openldap
+
+Updated the config.json to connect MatterMost instance to this LDAP.
+
 Installed reverse-proxy with nginx using the MatterMost documentation site without incident
+Reference: https://docs.mattermost.com/install/install-ubuntu-1804.html#configuring-nginx-as-a-proxy-for-mattermost-server
+
 Used openssl to create a self-signed certificate and stage it in appropriate location as part of initial provisioning and updated the nginx configuration to listen on SSL using self-signed certs
+
 Tested all functionality on local dev box (Mac OS X)
+
 Tested on Fedora 32 instance independent hardware
+
 General cleaup on code and file structure of GH
+
 Tested several times on desktop to document requirements
