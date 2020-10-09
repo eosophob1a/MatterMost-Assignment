@@ -19,17 +19,17 @@ To get ansible to function correctly in Ubuntu 18.04 I needed to make sure that 
 
 During setup of the database I ran in to issues setting up database and database users.  I resolved this by separating the step out and changing user to the postgres user to test permissions to DB
 
-Ran into an issue with config.json and best way to template using vagrant decided to pre-create required files for configuration and use vagrant's shared file structure to stage all required files
+Ran into an issue with config.json and best way to template using Vagrant decided to pre-create required files for configuration and use Vagrant's shared file structure to stage all required files
 
 Ran in to an issue with setting up OpenLDAP unattended due to prompts like setting root password for the directory ; Asked Sven about using docker image of OpenLDAP Sven was ok with this so implemented this as a solution for LDAP.
 Reference: https://github.com/rroemhild/docker-test-openldap
 
 Updated the config.json to connect MatterMost instance to this LDAP.
 
-Installed reverse-proxy with nginx using the MatterMost documentation site without incident
+Installed reverse-proxy with NGINX using the MatterMost documentation site without incident
 Reference: https://docs.mattermost.com/install/install-ubuntu-1804.html#configuring-nginx-as-a-proxy-for-mattermost-server
 
-Used openssl to create a self-signed certificate and stage it in appropriate location as part of initial provisioning and updated the nginx configuration to listen on SSL using self-signed certs
+Used openssl to create a self-signed certificate and stage it in appropriate location as part of initial provisioning and updated the NGINX configuration to listen on SSL using self-signed certs
 
 Tested all functionality on local dev box (Mac OS X)
 
