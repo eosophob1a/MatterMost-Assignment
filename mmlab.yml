@@ -85,7 +85,7 @@
       shell: | 
         docker pull rroemhild/test-openldap
         docker run --privileged -d -p 389:389 rroemhild/test-openldap
-    - name: Setup users for for Planet Express
+    - name: Setup users for Planet Express
       become_user: root
       shell: | 
         cd /opt/mattermost
