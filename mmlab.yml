@@ -1,5 +1,5 @@
 ---
-- name: TCJ MatterMost Assignement Install
+- name: TCJ MatterMost Assignment Install
   hosts: all
   become_user: root
   become: yes
